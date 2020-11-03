@@ -1,25 +1,16 @@
 import * as tf from '@tensorflow/tfjs-core';
 
-import {ExecutionContext} from '../compilation';
+import {ExecutionContext} from '../execution_context';
 import {Operand} from '../operand';
-import {SingleOutputOperation} from '../operation';
-import * as utils from '../utils';
+import {Operation} from '../operation';
 
-export class Softmax extends SingleOutputOperation {
-  private x_: Operand;
-
+export class Softmax extends Operation {
   constructor(x: Operand) {
-    super(x.builder);
-    utils.validateOperand(x);
-    this.x_ = x;
-  }
-
-  inputs(): Operand[] {
-    return [this.x_];
+    super([x]);
   }
 
   run(context: ExecutionContext): tf.Tensor {
-    const x: tf.Tensor = context.getTensor(this.x_);
+    const x: tf.Tensor = this.getTensor(this.inputs[0], context);
     if (x.rank !== 2) {
       throw new Error('The rank of x parameter should be 2.');
     }

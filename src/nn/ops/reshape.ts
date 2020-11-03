@@ -1,30 +1,22 @@
 import * as tf from '@tensorflow/tfjs-core';
 
-import {ExecutionContext} from '../compilation';
+import {ExecutionContext} from '../execution_context';
 import {Operand} from '../operand';
-import {SingleOutputOperation} from '../operation';
+import {Operation} from '../operation';
 import * as utils from '../utils';
 
-export class Reshape extends SingleOutputOperation {
-  private input_: Operand;
+export class Reshape extends Operation {
   private newShape_: number[];
 
   constructor(input: Operand, newShape: number[]) {
-    super(input.builder);
-    utils.validateOperand(input);
-    this.input_ = input;
+    super([input]);
     utils.assert(
-        utils.isIntegerArray(newShape) && newShape.length !== 0,
-        'The newShape parameter is invalid.');
+        utils.isNumberArray(newShape), 'The newShape parameter is invalid.');
     this.newShape_ = newShape;
   }
 
-  inputs(): Operand[] {
-    return [this.input_];
-  }
-
   run(context: ExecutionContext): tf.Tensor {
-    const input: tf.Tensor = context.getTensor(this.input_);
+    const input: tf.Tensor = this.getTensor(this.inputs[0], context);
     return tf.reshape(input, this.newShape_);
   }
 }

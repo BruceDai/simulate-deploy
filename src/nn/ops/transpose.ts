@@ -1,32 +1,27 @@
 import * as tf from '@tensorflow/tfjs-core';
 
-import {ExecutionContext} from '../compilation';
+import {ExecutionContext} from '../execution_context';
 import {Operand} from '../operand';
-import {SingleOutputOperation} from '../operation';
+import {Operation} from '../operation';
 import * as utils from '../utils';
 
-export class Transpose extends SingleOutputOperation {
-  private input_: Operand;
-  private permutation_?: number[];
+export class Transpose extends Operation {
+  private permutation_: number[];
 
   constructor(input: Operand, permutation?: number[]) {
-    super(input.builder);
-    utils.validateOperand(input);
-    this.input_ = input;
-    if (permutation !== undefined) {
+    super([input]);
+    if (permutation) {
       utils.assert(
-          utils.isIntegerArray(permutation) && permutation.length !== 0,
+          utils.isNumberArray(permutation),
           'The permutation parameter is invalid.');
+      this.permutation_ = permutation;
+    } else {
+      this.permutation_ = undefined;
     }
-    this.permutation_ = permutation;
-  }
-
-  inputs(): Operand[] {
-    return [this.input_];
   }
 
   run(context: ExecutionContext): tf.Tensor {
-    const input: tf.Tensor = context.getTensor(this.input_);
+    const input: tf.Tensor = this.getTensor(this.inputs[0], context);
     return tf.transpose(input, this.permutation_);
   }
 }

@@ -1,11 +1,9 @@
-[![build and test](https://github.com/BruceDai/simulate-deploy/workflows/build%20and%20test/badge.svg)](https://github.com/BruceDai/simulate-deploy/actions)
-
 # WebNN Polyfill
 
-A JavaScript implementation of the [Web Neural Network API](https://BruceDai.github.io/webnn/).
+A JavaScript implementation of the [Web Neural Network API](https://webmachinelearning.github.io/webnn/).
 
-* [API docs](https://BruceDai.github.io/simulate-deploy/docs/)
-* [Unit tests](https://BruceDai.github.io/simulate-deploy/test/)
+* [API docs](https://webmachinelearning.github.io/webnn-polyfill/docs/)
+* [Unit tests](https://webmachinelearning.github.io/webnn-polyfill/test/)
 
 ## Build and Test
 
@@ -24,14 +22,14 @@ A JavaScript implementation of the [Web Neural Network API](https://BruceDai.git
 
 #### Production build
 
-```sh
+```
 > npm run build-production
 ```
 
 ### Test
 #### Run tests in node.js.
 
-```sh
+```hs
 > npm test
 ```
 

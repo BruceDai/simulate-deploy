@@ -1,88 +1,17 @@
 import {Compilation} from './compilation';
-import {NamedOperands} from './model_builder';
-import {ConstantOperand, InputOperand, OutputOperand} from './operand';
-import {Operation} from './operation';
-import * as utils from './utils';
+import {CompilationOptions} from './compilation_options';
+import {Model as ModelImpl} from './model_impl';
 
 /**
- * [API
- * spec](https://webmachinelearning.github.io/webnn/#enumdef-powerpreference)
+ * [spec](https://webmachinelearning.github.io/webnn/#model)
  */
-export enum PowerPreference {
-  'default' = 'default',
-  'high-performance' = 'high-performance',
-  'low-power' = 'low-power'
-}
-
-/**
- * [API
- * spec](https://webmachinelearning.github.io/webnn/#dictdef-compilationoptions)
- */
-export interface CompilationOptions {
+export interface Model {
   /** */
-  powerPreference?: PowerPreference;
+  createCompilation(options: CompilationOptions): Promise<Compilation>;
 }
 
-/**
- * [API spec](https://webmachinelearning.github.io/webnn/#model)
- */
-export class Model {
-  private inputs_: Map<string, InputOperand> = new Map();
-  private outputs_: Map<string, OutputOperand> = new Map();
-  private constants_: Set<ConstantOperand> = new Set();
-
-  get inputs(): Map<string, InputOperand> {
-    return this.inputs_;
-  }
-  get outputs(): Map<string, OutputOperand> {
-    return this.outputs_;
-  }
-  get constants(): ConstantOperand[] {
-    return Array.from(this.constants_.values());
-  }
-
-  constructor(outputs?: NamedOperands) {
-    utils.assert(outputs !== undefined, 'Invalid argument');
-    for (const name in outputs) {
-      utils.assert(
-          typeof name === 'string' && outputs[name] instanceof OutputOperand,
-          'The outputs parameter is invalid.');
-      this.outputs_.set(name, outputs[name] as OutputOperand);
-    }
-    utils.assert(this.outputs_.size !== 0, 'The outputs is empty');
-    this.initialize();
-  }
-
-  /** */
-  async compile(options: CompilationOptions): Promise<Compilation> {
-    const compilation = await Compilation.createAndCompile(options, this);
-    return compilation;
-  }
-
-  private initialize(): void {
-    for (const output of this.outputs_.values()) {
-      this.handleOperation(output.operation);
-    }
-  }
-
-  private handleOperation(operation: Operation): void {
-    for (const operand of operation.inputs()) {
-      if (operand instanceof InputOperand) {
-        if (this.inputs_.has(operand.name)) {
-          if (this.inputs_.get(operand.name) !== operand) {
-            throw new Error('The name of this input is existed.');
-          } else {
-            continue;
-          }
-        }
-        this.inputs_.set(operand.name, operand);
-      } else if (operand instanceof ConstantOperand) {
-        if (!this.constants_.has(operand)) {
-          this.constants_.add(operand);
-        }
-      } else if (operand instanceof OutputOperand) {
-        this.handleOperation(operand.operation);
-      }
-    }
-  }
+interface ModelConstructor {
+  new(): Model;
 }
+// eslint-disable-next-line no-redeclare
+export const Model: ModelConstructor = ModelImpl;
