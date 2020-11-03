@@ -1,4 +1,5 @@
 [![build and test](https://github.com/BruceDai/simulate-deploy/workflows/build%20and%20test/badge.svg)](https://github.com/BruceDai/simulate-deploy/actions)
+[![deploy](https://github.com/BruceDai/simulate-deploy/workflows/deploy/badge.svg)](https://github.com/BruceDai/simulate-deploy/actions)
 
 # WebNN Polyfill
 
